@@ -6,3 +6,4 @@ pydantic
 passlib[bcrypt]
 python-jose[cryptography]
 python-multipart
+firebase-admin
