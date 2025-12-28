@@ -79,11 +79,11 @@ initialize_firebase()
 
 def verify_token(id_token):
     """
-    Verifies a Firebase ID token and returns the UID.
+    Verifies a Firebase ID token and returns the decoded token dictionary.
     """
     try:
         decoded_token = auth.verify_id_token(id_token)
-        return decoded_token['uid']
+        return decoded_token
     except Exception as e:
         logger.error(f"Token verification failed: {e}")
         return None

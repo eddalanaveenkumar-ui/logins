@@ -35,11 +35,12 @@ def get_current_user(authorization: Annotated[str | None, Header()] = None, db: 
         raise HTTPException(status_code=401, detail="Invalid authorization scheme")
     
     id_token = parts[1]
-    uid = firebase_config.verify_token(id_token)
+    decoded_token = firebase_config.verify_token(id_token)
     
-    if not uid:
+    if not decoded_token:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
-        
+    
+    uid = decoded_token.get('uid')
     user = db.query(models.User).filter(models.User.uid == uid).first()
     if user is None:
         # User authenticated with Firebase but not in Postgres yet
@@ -63,8 +64,10 @@ def register_user(
 ):
     # Verify token manually since user might not exist in DB yet
     if not authorization: raise HTTPException(401, "No token")
-    uid = firebase_config.verify_token(authorization.split()[1])
-    if not uid: raise HTTPException(401, "Invalid token")
+    decoded_token = firebase_config.verify_token(authorization.split()[1])
+    if not decoded_token: raise HTTPException(401, "Invalid token")
+    
+    uid = decoded_token.get('uid')
 
     # Check username uniqueness
     if db.query(models.User).filter(models.User.username == user_data.username).first():
