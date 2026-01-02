@@ -125,6 +125,7 @@ def google_login(request: schemas.GoogleLoginRequest, db: Session = Depends(data
             "new_user": True, 
             "profile": {
                 "uid": new_user.uid,
+                "userId": new_user.uid, # Added for frontend compatibility
                 "username": new_user.username,
                 "email": new_user.email,
                 "created_at": new_user.created_at,
@@ -140,6 +141,7 @@ def google_login(request: schemas.GoogleLoginRequest, db: Session = Depends(data
         "new_user": False, 
         "profile": {
             "uid": user.uid,
+            "userId": user.uid, # Added for frontend compatibility
             "username": user.username,
             "email": user.email,
             "created_at": user.created_at,
@@ -154,6 +156,7 @@ def google_login(request: schemas.GoogleLoginRequest, db: Session = Depends(data
 def get_user_profile(current_user: models.User = Depends(get_current_user)):
     return {
         "uid": current_user.uid,
+        "userId": current_user.uid, # Added for frontend compatibility
         "username": current_user.username,
         "email": current_user.email,
         "created_at": current_user.created_at,
@@ -180,6 +183,7 @@ def update_user_profile(
     db.refresh(current_user)
     return {"status": "Profile updated successfully", "profile": {
         "uid": current_user.uid,
+        "userId": current_user.uid, # Added for frontend compatibility
         "username": current_user.username,
         "email": current_user.email,
         "state": current_user.state,
@@ -188,8 +192,8 @@ def update_user_profile(
     }}
 
 @app.post("/user/lookup")
-def lookup_user(data: dict, db: Session = Depends(database.get_db)):
-    username = data.get("username")
+def lookup_user(data: schemas.UserLookup, db: Session = Depends(database.get_db)):
+    username = data.username
     user = db.query(models.User).filter(models.User.username == username).first()
     if user:
         return {"email": user.email}

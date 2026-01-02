@@ -38,3 +38,6 @@ class UserProfileUpdate(BaseModel):
     language: Optional[str] = None
     photo_url: Optional[str] = None
     bio: Optional[str] = None
+
+class UserLookup(BaseModel):
+    username: str
